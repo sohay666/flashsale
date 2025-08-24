@@ -123,20 +123,25 @@ How to run backend:
   - cp .env.example .env
   - yarn install 
   - yarn start
+  <img src="docs/backend-run.png" width="2550">
 
 How to run frontend:
   - cd frontend/
   - cp .env.example .env
-  - yarn dev 
+  - yarn dev
+  <img src="docs/frontend.png" width="2550">
 
 How to run test:
  - cd backend/
  - yarn test
+ <img src="docs/unitest.png" width="2550">
 
 How to run stress test:
  - cd backend/
  - yarn start
  - yarn loadtest
+ <img src="docs/loadtest.png" width="2550">
 
 or if you wanna use docker:
 - docker-compose up --build
+<img src="docs/docker.png" width="2550">

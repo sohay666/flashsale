@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev
+    environment:
+      PORT: 4000
+      # Redis
+      REDIS_URL: redis://redis:6379
+      REDIS_DB: 0
+      REDIS_TX_POOL: 8
+      # Sale config (active now for dev)
+      PRODUCT_ID: NFT-001
+      PRODUCT_DESCRIPTION: "Ultra-rare drop. First come, first served. Limited stock"
+      SALE_START: 0s
+      SALE_END: 10m
+      SALE_STOCK: 500
+      # App behavior
+      DISABLE_RATELIMIT: 0
+      # CORS origin for Vite dev
+      ALLOWED_ORIGINS: "http://localhost:5173,http://127.0.0.1:5173,http://0.0.0.0:5173"
+    depends_on:
+      - redis
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev
+    working_dir: /app
+    environment:
+      NODE_ENV: development                # make sure dev deps are allowed
+      VITE_API_URL: http://localhost:4000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app                    # mount your source
+      - frontend_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  redis-data:
+  backend_node_modules:
+  frontend_node_modules:
